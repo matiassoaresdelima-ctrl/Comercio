@@ -4,13 +4,12 @@ import sys
 import logging
 import traceback
 
+# Intentar capturar el error exacto de importación o configuración
 try:
     from flask import Flask
     from models import db
 
     app = Flask(__name__)
-
-    # Forzar logs a la consola de Render
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
     uri = os.environ.get('DATABASE_URL')
@@ -24,22 +23,14 @@ try:
 
     @app.route('/')
     def index():
-        return "<h1>Servidor de Diagnostico Activo</h1>"
-
-    @app.route('/test_db')
-    def test_db():
-        try:
-            db.session.execute(db.text('SELECT 1'))
-            return "Conexion a base de datos: EXITOSA"
-        except Exception as e:
-            return f"Error de BD: {str(e)}", 500
+        return "<h1>Diagnóstico: Sistema Operativo</h1>"
 
     if __name__ == '__main__':
         with app.app_context():
             db.create_all()
         app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
-except Exception:
-    print("!!! ERROR CRITICO DURANTE EL ARRANQUE !!!")
-    traceback.print_exc()
+except Exception as e:
+    print("!!! ERROR CRITICO EN EL ARRANQUE !!!")
+    traceback.print_exc(file=sys.stdout)
     sys.exit(1)
