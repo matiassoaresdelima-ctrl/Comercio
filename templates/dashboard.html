@@ -1,38 +1,29 @@
 
 {% extends 'base.html' %}
 {% block content %}
-<div class='row mb-4'>
+<h2 class='mb-4'>Indicadores del Comercio</h2>
+<div class='row g-3'>
     <div class='col-md-4'>
-        <div class='card bg-primary text-white shadow-sm'>
-            <div class='card-body text-center'>
-                <h5>Ventas Totales</h5>
-                <h3>${{ total_ventas }}</h3>
-            </div>
+        <div class='card bg-success text-white p-3'>
+            <h6>Ventas (Ingresos)</h6>
+            <p class='mb-1'>Hoy: ${{ v_dia }}</p>
+            <p class='mb-1'>Semana: ${{ v_sem }}</p>
+            <p class='h4 font-weight-bold'>Mes: ${{ v_mes }}</p>
         </div>
     </div>
     <div class='col-md-4'>
-        <div class='card bg-danger text-white shadow-sm'>
-            <div class='card-body text-center'>
-                <h5>Gastos (Salidas)</h5>
-                <h3>${{ total_gastos }}</h3>
-            </div>
+        <div class='card bg-danger text-white p-3'>
+            <h6>Gastos (Salidas)</h6>
+            <p class='mb-1'>Hoy: ${{ g_dia }}</p>
+            <p class='mb-1'>Semana: ${{ g_sem }}</p>
+            <p class='h4 font-weight-bold'>Mes: ${{ g_mes }}</p>
         </div>
     </div>
     <div class='col-md-4'>
-        <div class='card bg-success text-white shadow-sm'>
-            <div class='card-body text-center'>
-                <h5>Balance / Ganancia</h5>
-                <h3>${{ balance }}</h3>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class='row mt-4'>
-    <div class='col-12'>
-        <div class='card p-4'>
-            <h4>Bienvenido al Sistema de Gestión</h4>
-            <p>Utiliza el menú superior para registrar viandas o salidas de dinero.</p>
+        <div class='card bg-dark text-white p-3'>
+            <h6>Balance Total</h6>
+            <p class='mb-1'>Ganancia Neta (Mensual):</p>
+            <p class='h2'>${{ balance }}</p>
         </div>
     </div>
 </div>

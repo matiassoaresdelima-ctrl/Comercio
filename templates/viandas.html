@@ -1,36 +1,30 @@
 
 {% extends 'base.html' %}
 {% block content %}
-<div class='d-flex justify-content-between align-items-center mb-4'>
-    <h2>Gestionar Menú</h2>
-    <button class='btn btn-success' data-bs-toggle='collapse' data-bs-target='#formVianda'>+ Nueva Vianda</button>
+<div class='d-flex justify-content-between mb-4'>
+    <h2>Gestionar Viandas</h2>
+    <button class='btn btn-success' data-bs-toggle='collapse' data-bs-target='#f'>+ Nueva Vianda</button>
 </div>
-
-<div class='collapse mb-4' id='formVianda'>
-    <div class='card card-body'>
-        <form method='POST'>
-            <div class='row'>
-                <div class='col-md-4'><input type='text' name='nombre' class='form-control' placeholder='Nombre' required></div>
-                <div class='col-md-4'><input type='number' step='0.01' name='precio' class='form-control' placeholder='Precio' required></div>
-                <div class='col-md-4'><button type='submit' class='btn btn-primary w-100'>Guardar</button></div>
-                <div class='col-12 mt-2'><textarea name='descripcion' class='form-control' placeholder='Descripción'></textarea></div>
+<div class='collapse mb-4' id='f'>
+    <form method='POST' class='card card-body'>
+        <div class='row g-2'>
+            <div class='col-md-4'><input name='nombre' class='form-control' placeholder='Nombre' required></div>
+            <div class='col-md-3'><input type='number' name='precio' class='form-control' placeholder='Precio' required></div>
+            <div class='col-md-3'>
+                <select name='tipo' class='form-control'>
+                    <option value='diaria'>Pago Diario</option>
+                    <option value='semanal'>Suscripción Semanal</option>
+                    <option value='mensual'>Suscripción Mensual</option>
+                </select>
             </div>
-        </form>
-    </div>
+            <div class='col-md-2'><button class='btn btn-primary w-100'>Guardar</button></div>
+        </div>
+    </form>
 </div>
-
-<div class='card shadow-sm'>
-    <table class='table'>
-        <thead><tr><th>Nombre</th><th>Precio</th><th>Acciones</th></tr></thead>
-        <tbody>
-            {% for v in viandas %}
-            <tr>
-                <td>{{ v.nombre }}</td>
-                <td>${{ v.precio }}</td>
-                <td><a href='/eliminar_vianda/{{ v.id }}' class='btn btn-sm btn-danger'>Borrar</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<table class='table table-hover bg-white rounded shadow-sm'>
+    <thead><tr><th>Nombre</th><th>Tipo</th><th>Precio</th></tr></thead>
+    <tbody>
+        {% for v in viandas %}<tr><td>{{v.nombre}}</td><td>{{v.tipo}}</td><td>${{v.precio}}</td></tr>{% endfor %}
+    </tbody>
+</table>
 {% endblock %}
