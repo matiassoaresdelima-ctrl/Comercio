@@ -1,13 +1,14 @@
 
 import os
 import sys
-print(">>> INICIANDO APLICACION FLASK <<<")
-
-from flask import Flask, render_template
-from models import db, Vianda, MovimientoDinero
+import logging
+from flask import Flask
+from models import db
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'emergency_key'
+
+# Forzar logs a la consola de Render
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 uri = os.environ.get('DATABASE_URL')
 if uri and uri.startswith('postgres://'):
@@ -19,8 +20,17 @@ db.init_app(app)
 
 @app.route('/')
 def index():
-    print(">>> SOLICITUD RECIBIDA EN / <<<")
-    return "<h1>Servidor Activo</h1><p>Si ves esto, Flask funciona. El problema era el Dashboard.</p>"
+    app.logger.info("Acceso a la ruta raiz exitoso")
+    return "<h1>OK: El servidor responde</h1>"
+
+@app.route('/test_db')
+def test_db():
+    try:
+        db.session.execute(db.text('SELECT 1'))
+        return "Conexion a base de datos: EXITOSA"
+    except Exception as e:
+        app.logger.error(f"Error de BD: {str(e)}")
+        return f"Error de BD: {str(e)}", 500
 
 if __name__ == '__main__':
     with app.app_context():
