@@ -19,6 +19,10 @@ class Vianda(db.Model):
     disponible = db.Column(db.Boolean, default=True)
     foto = db.Column(db.String(200))
 
+    @classmethod
+    def get_total_viandas(cls):
+        return cls.query.count()
+
 class Cliente(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
@@ -41,3 +45,11 @@ class MovimientoDinero(db.Model):
     monto = db.Column(db.Float, nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.now)
     descripcion = db.Column(db.String(200))
+
+    @classmethod
+    def get_financial_summary(cls, start_date):
+        v_mes = db.session.query(db.func.sum(cls.monto)).filter(cls.tipo == 'Ingreso', cls.fecha >= start_date).scalar() or 0.0
+        g_mes = db.session.query(db.func.sum(cls.monto)).filter(cls.tipo == 'Egreso', cls.fecha >= start_date).scalar() or 0.0
+        balance = v_mes - g_mes
+        conteo_ventas = db.session.query(cls).filter(cls.tipo == 'Ingreso', cls.fecha >= start_date).count()
+        return v_mes, g_mes, balance, conteo_ventas
