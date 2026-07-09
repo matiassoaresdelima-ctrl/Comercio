@@ -1,9 +1,10 @@
 
+import os
+import sys
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-import os
 
 # Importar los modelos actualizados
 from models import db, Usuario, Vianda, Cliente, Pedido, MovimientoDinero
@@ -111,13 +112,28 @@ def eliminar_vianda(id):
     return redirect(url_for('viandas'))
 
 if __name__ == '__main__':
-    # This part will only run when app.py is executed directly
-    port = int(os.environ.get('PORT', 5000))
-    with app.app_context():
-        db.create_all()
-        # Crear admin por defecto si no existe
-        if not Usuario.query.filter_by(username='admin').first():
-            admin = Usuario(username='admin', password='admin_password') # WARNING: Clear text password for demo
-            db.session.add(admin)
-            db.session.commit()
-    app.run(host='0.0.0.0', port=port, debug=True)
+    # Detect if running within a Colab interactive cell vs. a separate script execution
+    if 'IPython' in sys.modules and 'google.colab' in sys.modules:
+        print("Flask app defined. To run it, execute '!python app.py' in a new cell.")
+        # Ensure database is initialized even if not running the app
+        with app.app_context():
+            db.create_all()
+            if not Usuario.query.filter_by(username='admin').first():
+                admin = Usuario(username='admin', password='admin_password') # WARNING: Clear text password for demo
+                db.session.add(admin)
+                db.session.commit()
+    else:
+        port = int(os.environ.get('PORT', 5000))
+        with app.app_context():
+            db.create_all()
+            # Crear admin por defecto si no existe
+            if not Usuario.query.filter_by(username='admin').first():
+                admin = Usuario(username='admin', password='admin_password') # WARNING: Clear text password for demo
+                db.session.add(admin)
+                db.session.commit()
+
+        print(f"
+Flask app starting on http://127.0.0.1:{port} and http://{os.environ.get('COLAB_JUPYTER_IP', '0.0.0.0')}:{port}")
+        print("Accede a la aplicación usando una de estas URLs.
+")
+        app.run(host='0.0.0.0', port=port, debug=False)
