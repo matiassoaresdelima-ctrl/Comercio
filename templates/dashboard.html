@@ -1,38 +1,38 @@
 
 {% extends 'base.html' %}
 {% block content %}
-<h2 class='mb-4'>Dashboard</h2>
-<div class='row'>
-    <div class='col-md-3 mb-4'>
+<div class='row mb-4'>
+    <div class='col-md-4'>
         <div class='card bg-primary text-white shadow-sm'>
-            <div class='card-body'>
-                <h5>Ventas Hoy</h5>
-                <h3>$0.00</h3>
+            <div class='card-body text-center'>
+                <h5>Ventas Totales</h5>
+                <h3>${{ total_ventas }}</h3>
             </div>
         </div>
     </div>
-    <div class='col-md-3 mb-4'>
+    <div class='col-md-4'>
+        <div class='card bg-danger text-white shadow-sm'>
+            <div class='card-body text-center'>
+                <h5>Gastos (Salidas)</h5>
+                <h3>${{ total_gastos }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class='col-md-4'>
         <div class='card bg-success text-white shadow-sm'>
-            <div class='card-body'>
-                <h5>Pedidos</h5>
-                <h3>0</h3>
+            <div class='card-body text-center'>
+                <h5>Balance / Ganancia</h5>
+                <h3>${{ balance }}</h3>
             </div>
         </div>
     </div>
-    <div class='col-md-3 mb-4'>
-        <div class='card bg-warning text-dark shadow-sm'>
-            <div class='card-body'>
-                <h5>Pendientes</h5>
-                <h3>0</h3>
-            </div>
-        </div>
-    </div>
-    <div class='col-md-3 mb-4'>
-        <div class='card bg-info text-white shadow-sm'>
-            <div class='card-body'>
-                <h5>Ganancia</h5>
-                <h3>$0.00</h3>
-            </div>
+</div>
+
+<div class='row mt-4'>
+    <div class='col-12'>
+        <div class='card p-4'>
+            <h4>Bienvenido al Sistema de Gestión</h4>
+            <p>Utiliza el menú superior para registrar viandas o salidas de dinero.</p>
         </div>
     </div>
 </div>
