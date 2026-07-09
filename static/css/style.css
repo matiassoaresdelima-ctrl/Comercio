@@ -1,0 +1,32 @@
+
+:root {
+    --primary-green: #2e7d32;
+    --light-gray: #f8f9fa;
+    --dark-gray: #343a40;
+}
+
+body {
+    background-color: var(--light-gray);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-success {
+    background-color: var(--primary-green) !important;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-success {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+    }
+}
