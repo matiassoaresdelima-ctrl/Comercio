@@ -27,8 +27,10 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if request.method == 'POST':
-        user = Usuario.query.filter_by(username=request.form.get('username')).first()
-        if user and user.password == request.form.get('password'):
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = Usuario.query.filter_by(username=username).first()
+        if user and user.password == password:
             login_user(user)
             return redirect(url_for('index'))
         flash('Credenciales inválidas')
@@ -39,6 +41,12 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.route('/viandas')
+@login_required
+def viandas():
+    lista = Vianda.query.all()
+    return render_template('viandas.html', viandas=lista)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
