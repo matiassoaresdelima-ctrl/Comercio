@@ -17,18 +17,21 @@ db.init_app(app)
 
 @app.route('/')
 def index():
-    hoy = datetime.now()
-    inicio_mes = hoy.replace(day=1, hour=0, minute=0, second=0)
-    v_mes, g_mes, balance, conteo_ventas = MovimientoDinero.get_financial_summary(inicio_mes)
-    cant_viandas = Vianda.get_total_viandas()
-    stats = {
-        'v_mes': v_mes, 'g_mes': g_mes, 'balance': balance,
-        'cant_viandas': cant_viandas,
-        'margen': round((balance / v_mes * 100) if v_mes > 0 else 0, 1),
-        'ticket_promedio': round((v_mes / conteo_ventas) if conteo_ventas > 0 else 0, 2),
-        'fecha_mes': inicio_mes.strftime('%d/%m/%Y')
-    }
-    return render_template('dashboard.html', **stats)
+    try:
+        hoy = datetime.now()
+        inicio_mes = hoy.replace(day=1, hour=0, minute=0, second=0)
+        v_mes, g_mes, balance, conteo_ventas = MovimientoDinero.get_financial_summary(inicio_mes)
+        cant_viandas = Vianda.get_total_viandas()
+        stats = {
+            'v_mes': v_mes, 'g_mes': g_mes, 'balance': balance,
+            'cant_viandas': cant_viandas,
+            'margen': round((balance / v_mes * 100) if v_mes > 0 else 0, 1),
+            'ticket_promedio': round((v_mes / conteo_ventas) if conteo_ventas > 0 else 0, 2),
+            'fecha_mes': inicio_mes.strftime('%d/%m/%Y')
+        }
+        return render_template('dashboard.html', **stats)
+    except Exception as e:
+        return f"Error en base de datos: {e}. Intenta reiniciar el servicio en Render."
 
 @app.route('/viandas', methods=['GET', 'POST'])
 def viandas():
@@ -48,7 +51,9 @@ def salidas():
         return redirect(url_for('salidas'))
     return render_template('salidas.html', egresos=MovimientoDinero.query.filter_by(tipo='Egreso').all())
 
+# Bloque crítico para crear tablas en Render automáticamente
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
