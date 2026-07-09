@@ -3,11 +3,15 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, Usuario, Vianda, Cliente, Pedido, MovimientoDinero
 import os
+import logging
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_key_123')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///comercio.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configurar logs para ver errores en Render
+logging.basicConfig(level=logging.DEBUG)
 
 db.init_app(app)
 login_manager = LoginManager(app)
@@ -15,7 +19,10 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Usuario.query.get(int(user_id))
+    try:
+        return Usuario.query.get(int(user_id))
+    except:
+        return None
 
 @app.route('/')
 @login_required
@@ -29,11 +36,15 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = Usuario.query.filter_by(username=username).first()
-        if user and user.password == password:
-            login_user(user)
-            return redirect(url_for('index'))
-        flash('Credenciales inválidas')
+        try:
+            user = Usuario.query.filter_by(username=username).first()
+            if user and user.password == password:
+                login_user(user)
+                return redirect(url_for('index'))
+            flash('Credenciales inválidas')
+        except Exception as e:
+            app.logger.error(f'Error en login: {e}')
+            flash('Error interno del servidor')
     return render_template('login.html')
 
 @app.route('/logout')
