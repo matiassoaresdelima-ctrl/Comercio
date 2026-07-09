@@ -16,6 +16,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
+@app.route('/test_db')
+def test_db():
+    try:
+        db.create_all()
+        v_count = Vianda.query.count()
+        return f"✅ Conexión exitosa. Tablas verificadas. Total viandas: {v_count}"
+    except Exception as e:
+        return f"❌ Error de DB: {str(e)} <br><pre>{traceback.format_exc()}</pre>"
+
 @app.route('/')
 def index():
     try:
@@ -33,7 +42,7 @@ def index():
         return render_template('dashboard.html', **stats)
     except Exception as e:
         error_details = traceback.format_exc()
-        return f"<h1>Error de Diagnóstico</h1><p>{e}</p><pre>{error_details}</pre>", 500
+        return f"<h1>Error en Dashboard</h1><p>{e}</p><pre>{error_details}</pre>", 500
 
 @app.route('/viandas', methods=['GET', 'POST'])
 def viandas():
