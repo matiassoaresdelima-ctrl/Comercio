@@ -7,6 +7,7 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_key_123')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///comercio.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 login_manager = LoginManager(app)
@@ -16,7 +17,28 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return Usuario.query.get(int(user_id))
 
-# Aquí irían tus rutas (@app.route)
+@app.route('/')
+@login_required
+def index():
+    return render_template('dashboard.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        user = Usuario.query.filter_by(username=request.form.get('username')).first()
+        if user and user.password == request.form.get('password'):
+            login_user(user)
+            return redirect(url_for('index'))
+        flash('Credenciales inválidas')
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
