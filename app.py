@@ -19,7 +19,7 @@ def index():
         balance = total_ventas - total_gastos
         return render_template('dashboard.html', total_ventas=total_ventas, total_gastos=total_gastos, balance=balance)
     except Exception as e:
-        return f"Error en el Dashboard: {str(e)}"
+        return f'Error en el sistema: {str(e)}'
 
 @app.route('/salidas', methods=['GET', 'POST'])
 def salidas():
@@ -34,33 +34,21 @@ def salidas():
         db.session.add(nuevo_gasto)
         db.session.commit()
         return redirect(url_for('salidas'))
-    
     egresos = MovimientoDinero.query.filter_by(tipo='Egreso').all()
     return render_template('salidas.html', egresos=egresos)
 
 @app.route('/viandas', methods=['GET', 'POST'])
 def viandas():
     if request.method == 'POST':
-        nueva = Vianda(
-            nombre=request.form.get('nombre'), 
-            precio=float(request.form.get('precio', 0)), 
-            disponible=True
-        )
+        nueva = Vianda(nombre=request.form.get('nombre'), precio=float(request.form.get('precio', 0)), disponible=True)
         db.session.add(nueva)
         db.session.commit()
         return redirect(url_for('viandas'))
     lista = Vianda.query.all()
     return render_template('viandas.html', viandas=lista)
 
-@app.route('/eliminar_vianda/<int:id>')
-def eliminar_vianda(id):
-    v = Vianda.query.get(id)
-    if v:
-        db.session.delete(v)
-        db.session.commit()
-    return redirect(url_for('viandas'))
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
