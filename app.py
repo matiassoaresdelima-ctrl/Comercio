@@ -1,19 +1,15 @@
 
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-
-# Importar modelos
-from models import db, Vianda, Cliente, Pedido, MovimientoDinero
+from models import db, Vianda, MovimientoDinero
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'prod_key_999')
-
-# Configuración crítica para Render/PostgreSQL
+app.config['SECRET_KEY'] = 'prod_key_999'
 uri = os.environ.get('DATABASE_URL', 'sqlite:///comercio.db')
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
+if uri and uri.startswith('postgres://'):
+    uri = uri.replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -25,7 +21,6 @@ def index():
     inicio_mes = hoy.replace(day=1, hour=0, minute=0, second=0)
     v_mes, g_mes, balance, conteo_ventas = MovimientoDinero.get_financial_summary(inicio_mes)
     cant_viandas = Vianda.get_total_viandas()
-    
     stats = {
         'v_mes': v_mes, 'g_mes': g_mes, 'balance': balance,
         'cant_viandas': cant_viandas,
@@ -42,19 +37,16 @@ def viandas():
         db.session.add(nueva)
         db.session.commit()
         return redirect(url_for('viandas'))
-    lista = Vianda.query.all()
-    return render_template('viandas.html', viandas=lista)
+    return render_template('viandas.html', viandas=Vianda.query.all())
 
 @app.route('/salidas', methods=['GET', 'POST'])
 def salidas():
     if request.method == 'POST':
-        monto = float(request.form.get('monto', 0))
-        nuevo = MovimientoDinero(tipo='Egreso', categoria=request.form.get('categoria'), monto=monto)
+        nuevo = MovimientoDinero(tipo='Egreso', categoria=request.form.get('categoria'), monto=float(request.form.get('monto', 0)))
         db.session.add(nuevo)
         db.session.commit()
         return redirect(url_for('salidas'))
-    egresos = MovimientoDinero.query.filter_by(tipo='Egreso').all()
-    return render_template('salidas.html', egresos=egresos)
+    return render_template('salidas.html', egresos=MovimientoDinero.query.filter_by(tipo='Egreso').all())
 
 if __name__ == '__main__':
     with app.app_context():
