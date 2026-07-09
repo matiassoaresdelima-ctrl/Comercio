@@ -1,5 +1,6 @@
 
 import os
+import traceback
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -31,7 +32,8 @@ def index():
         }
         return render_template('dashboard.html', **stats)
     except Exception as e:
-        return f"Error en base de datos: {e}. Intenta reiniciar el servicio en Render."
+        error_details = traceback.format_exc()
+        return f"<h1>Error de Diagnóstico</h1><p>{e}</p><pre>{error_details}</pre>", 500
 
 @app.route('/viandas', methods=['GET', 'POST'])
 def viandas():
@@ -51,7 +53,6 @@ def salidas():
         return redirect(url_for('salidas'))
     return render_template('salidas.html', egresos=MovimientoDinero.query.filter_by(tipo='Egreso').all())
 
-# Bloque crítico para crear tablas en Render automáticamente
 with app.app_context():
     db.create_all()
 
